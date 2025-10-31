@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Registro</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Winky+Sans:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ===========================
+         ESTILO BASE
+      ============================ */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Winky Sans", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(
+          135deg,
+          #1f0a0f,
+          #401c23
+        ); /* diferente del login */
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        color: #fff;
+      }
+
+      /* ===========================
+         FONDO CON CÍRCULOS ANIMADOS
+      ============================ */
+      .background-circles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: -1;
+      }
+
+      .background-circles .circle {
+        position: absolute;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        opacity: 0;
+        animation: circleAnimation 20s infinite ease-in-out;
+      }
+
+      @keyframes circleAnimation {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        50% {
+          opacity: 0.4;
+        }
+        100% {
+          transform: scale(1.5);
+          opacity: 0;
+        }
+      }
+
+      /* ===========================
+         TARJETA REGISTRO
+      ============================ */
+      .register-section {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 40px 35px;
+        width: 370px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+        animation: fadeIn 1.2s ease-out;
+      }
+
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+          transform: translateY(-40px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 700;
+        font-size: 1.8rem;
+        letter-spacing: 1px;
+      }
+
+      input {
+        width: 100%;
+        padding: 14px 16px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border: none;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        outline: none;
+        transition: all 0.3s ease;
+      }
+
+      input:focus {
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(
+          45deg,
+          #42e695,
+          #3bb2b8
+        ); /* color distinto al login */
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(59, 178, 184, 0.7);
+      }
+
+      p {
+        text-align: center;
+        margin-top: 20px;
+        color: #d0eaff;
+      }
+
+      a {
+        color: #7fe0ff;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+
+      a:hover {
+        color: #00bfff;
+      }
+
+      #msg {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+
+      @media (max-width: 480px) {
+        .register-section {
+          width: 90%;
+          padding: 30px 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-circles"></div>
+
+    <section class="register-section">
+      <h2>Crear cuenta</h2>
+      <input id="username" placeholder="Usuario (ej: lobo_123)" />
+      <input id="password" type="password" placeholder="Contraseña" />
+      <button id="btn">Registrar</button>
+      <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
+      <div id="msg"></div>
+    </section>
+
+    <script>
+      const API = "https://dawn-bar-8e7d.aritztoquero123.workers.dev/api";
+      document.getElementById("btn").addEventListener("click", async () => {
+        const u = document.getElementById("username").value.trim();
+        const p = document.getElementById("password").value;
+        const msg = document.getElementById("msg");
+        msg.style.color = "#fff";
+
+        if (!u || !p) {
+          msg.style.color = "salmon";
+          msg.textContent = "Rellena ambos campos";
+          return;
+        }
+
+        try {
+          const res = await fetch(API + "/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: u, password: p }),
+          });
+          const j = await res.json();
+          if (res.ok) {
+            msg.style.color = "lightgreen";
+            msg.textContent = "Registrado correctamente. Ve a iniciar sesión.";
+            setTimeout(() => (location.href = "login.html"), 1200);
+          } else {
+            msg.style.color = "salmon";
+            msg.textContent = j.error || "Error";
+          }
+        } catch (e) {
+          msg.style.color = "salmon";
+          msg.textContent = "Error de conexión";
+        }
+      });
+
+      // ===========================
+      // CÍRCULOS DE FONDO ANIMADOS
+      // ===========================
+      const bg = document.querySelector(".background-circles");
+      for (let i = 0; i < 10; i++) {
+        const circle = document.createElement("div");
+        circle.classList.add("circle");
+        const size = Math.random() * 300 + 100;
+        circle.style.width = `${size}px`;
+        circle.style.height = `${size}px`;
+        circle.style.left = `${Math.random() * 100}%`;
+        circle.style.top = `${Math.random() * 100}%`;
+        circle.style.animationDelay = `${Math.random() * 10}s`;
+        bg.appendChild(circle);
+      }
+    </script>
+  </body>
+</html>

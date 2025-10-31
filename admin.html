@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Panel de Administración</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        background: #f5f6fa;
+        margin: 0;
+        padding: 0;
+        color: #333;
+      }
+
+      header {
+        background: #2f3640;
+        color: #fff;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      #who {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        padding: 2rem;
+      }
+
+      section {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      h2 {
+        margin-top: 0;
+        color: #2f3640;
+        border-bottom: 2px solid #dcdde1;
+        padding-bottom: 0.5rem;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      li {
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      li:last-child {
+        border-bottom: none;
+      }
+
+      .btn {
+        background: #0984e3;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 0.3rem 0.7rem;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .btn:hover {
+        background: #74b9ff;
+      }
+
+      .logout {
+        background: #e84118;
+      }
+
+      .logout:hover {
+        background: #ff7675;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.8rem;
+        color: #888;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Panel de Administración</h1>
+      <div id="who">Cargando...</div>
+      <button id="logout" class="btn logout">Cerrar sesión</button>
+    </header>
+
+    <main>
+      <section>
+        <h2>Usuarios</h2>
+        <ul id="users"></ul>
+      </section>
+
+      <section>
+        <h2>Registros (Logs)</h2>
+        <ul id="logs"></ul>
+      </section>
+    </main>
+
+    <footer>© 2025 — Panel de administración</footer>
+
+    <script>
+      const API = "https://dawn-bar-8e7d.aritztoquero123.workers.dev/api";
+      const token = localStorage.getItem("token");
+      if (!token) location.href = "login.html";
+
+      async function me() {
+        const r = await fetch(API + "/me", {
+          headers: { Authorization: "Bearer " + token },
+        });
+        const j = await r.json();
+        if (!r.ok) {
+          alert(j.error || "No autorizado");
+          location.href = "login.html";
+        }
+        document.getElementById(
+          "who"
+        ).textContent = `Usuario: ${j.user} — Rol: ${j.role}`;
+        if (j.role !== "admin") {
+          alert("Necesitas ser administrador para acceder.");
+          location.href = "index.html";
+        }
+      }
+
+      async function loadUsers() {
+        const r = await fetch(API + "/users", {
+          headers: { Authorization: "Bearer " + token },
+        });
+        const j = await r.json();
+        const usersList = document.getElementById("users");
+        usersList.innerHTML = "";
+        if (!r.ok) {
+          usersList.innerHTML =
+            "<li>Error al cargar usuarios: " +
+            (j.error || "desconocido") +
+            "</li>";
+          return;
+        }
+
+        for (const u of j) {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <span>${u.username} — <b>${u.role}</b></span>
+            ${
+              u.role !== "admin"
+                ? `<button class="btn" data-user="${u.username}">Hacer Admin</button>`
+                : ""
+            }
+          `;
+          usersList.appendChild(li);
+        }
+
+        document.querySelectorAll("[data-user]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const username = btn.getAttribute("data-user");
+            if (!confirm(`¿Seguro que deseas hacer admin a ${username}?`))
+              return;
+            const res = await fetch(API + "/users/" + username, {
+              method: "PUT",
+              headers: {
+                Authorization: "Bearer " + token,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ role: "admin" }),
+            });
+            const result = await res.json();
+            if (res.ok) {
+              alert(`${username} ahora es administrador`);
+              loadUsers();
+              loadLogs();
+            } else {
+              alert(result.error || "Error al ascender usuario");
+            }
+          });
+        });
+      }
+
+      async function loadLogs() {
+        const r = await fetch(API + "/logs", {
+          headers: { Authorization: "Bearer " + token },
+        });
+        const j = await r.json();
+        const logsList = document.getElementById("logs");
+        logsList.innerHTML = "";
+        if (!r.ok) {
+          logsList.innerHTML =
+            "<li>Error al cargar logs: " + (j.error || "desconocido") + "</li>";
+          return;
+        }
+
+        for (const l of j) {
+          const li = document.createElement("li");
+          li.textContent = `[${l.created_at}] ${l.actor} ${l.action} ${
+            l.target
+          } ${l.details || ""}`;
+          logsList.appendChild(li);
+        }
+      }
+
+      document.getElementById("logout").addEventListener("click", () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        location.href = "login.html";
+      });
+
+      (async () => {
+        await me();
+        await loadUsers();
+        await loadLogs();
+      })();
+    </script>
+  </body>
+</html>
