@@ -4,51 +4,100 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Iniciar Sesión</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      /* Reset básico */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       body {
         font-family: "Poppins", sans-serif;
-        background: #0f172a;
+        background: linear-gradient(135deg, #0f172a, #1e293b);
         color: #fff;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
       }
+
       .login-box {
         background: rgba(255, 255, 255, 0.05);
-        padding: 40px;
+        backdrop-filter: blur(12px);
+        padding: 50px 40px;
         border-radius: 20px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
         text-align: center;
-        width: 320px;
+        width: 350px;
+        transition: transform 0.3s ease;
       }
+
+      .login-box:hover {
+        transform: translateY(-5px);
+      }
+
+      h2 {
+        font-weight: 600;
+        margin-bottom: 30px;
+        font-size: 1.8rem;
+        color: #f1f5f9;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      }
+
       input {
         width: 100%;
-        padding: 12px;
-        margin: 10px 0;
-        border-radius: 10px;
+        padding: 14px;
+        margin: 12px 0;
+        border-radius: 12px;
         border: none;
         outline: none;
         font-size: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        transition: background 0.3s ease;
       }
+
+      input:focus {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
       button {
         background: linear-gradient(90deg, #3b82f6, #2563eb);
-        color: white;
+        color: #fff;
         border: none;
-        padding: 12px 18px;
-        border-radius: 10px;
+        padding: 14px;
+        border-radius: 12px;
         cursor: pointer;
         width: 100%;
-        transition: 0.3s;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
       }
+
       button:hover {
         background: linear-gradient(90deg, #60a5fa, #3b82f6);
+        transform: scale(1.03);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
       }
+
       .switch {
+        margin-top: 18px;
         color: #60a5fa;
         cursor: pointer;
         font-size: 14px;
+        transition: color 0.2s ease;
       }
+
+      .switch:hover {
+        color: #93c5fd;
+      }
+
+      /* Toasts */
       .toast-container {
         position: fixed;
         top: 20px;
@@ -56,23 +105,26 @@
         z-index: 9999;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
       }
+
       .toast {
         background: rgba(30, 30, 30, 0.95);
         border-left: 4px solid #3b82f6;
-        padding: 12px 18px;
+        padding: 14px 18px;
         border-radius: 10px;
         color: #fff;
         font-size: 15px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
         animation: slideIn 0.3s ease forwards;
         opacity: 0;
         transform: translateX(50px);
       }
+
       .toast.error {
         border-left-color: #ff3b3b;
       }
+
       @keyframes slideIn {
         to {
           opacity: 1;
