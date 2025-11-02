@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión</title>
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background: #0f172a;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .login-box {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+        text-align: center;
+        width: 320px;
+      }
+      input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+        font-size: 15px;
+      }
+      button {
+        background: linear-gradient(90deg, #3b82f6, #2563eb);
+        color: white;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        width: 100%;
+        transition: 0.3s;
+      }
+      button:hover {
+        background: linear-gradient(90deg, #60a5fa, #3b82f6);
+      }
+      .switch {
+        color: #60a5fa;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .toast {
+        background: rgba(30, 30, 30, 0.95);
+        border-left: 4px solid #3b82f6;
+        padding: 12px 18px;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 15px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+        animation: slideIn 0.3s ease forwards;
+        opacity: 0;
+        transform: translateX(50px);
+      }
+      .toast.error {
+        border-left-color: #ff3b3b;
+      }
+      @keyframes slideIn {
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-box">
+      <h2 id="title">Iniciar Sesión</h2>
+      <input type="text" id="username" placeholder="Usuario" />
+      <input type="password" id="password" placeholder="Contraseña" />
+      <button id="submitBtn">Entrar</button>
+      <p class="switch" id="switchForm">¿No tienes cuenta? Regístrate</p>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <script>
+      const API = "https://dawn-bar-8e7d.aritztoquero123.workers.dev/api";
+
+      function showToast(msg, type = "info") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+        toast.className = "toast " + (type === "error" ? "error" : "");
+        toast.textContent = msg;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3200);
+      }
+
+      let mode = "login"; // login o register
+      document.getElementById("switchForm").onclick = () => {
+        mode = mode === "login" ? "register" : "login";
+        document.getElementById("title").textContent =
+          mode === "login" ? "Iniciar Sesión" : "Registrarse";
+        document.getElementById("submitBtn").textContent =
+          mode === "login" ? "Entrar" : "Registrar";
+        document.getElementById("switchForm").textContent =
+          mode === "login"
+            ? "¿No tienes cuenta? Regístrate"
+            : "¿Ya tienes cuenta? Inicia Sesión";
+      };
+
+      document.getElementById("submitBtn").onclick = async () => {
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+        if (!username || !password)
+          return showToast("Rellena todos los campos", "error");
+
+        const endpoint = mode === "login" ? "/login" : "/register";
+        try {
+          const res = await fetch(API + endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+          const data = await res.json();
+
+          if (!res.ok) return showToast(data.error || "Error", "error");
+
+          if (mode === "register") {
+            showToast("✅ Registrado correctamente. Ahora inicia sesión.");
+            mode = "login";
+            document.getElementById("title").textContent = "Iniciar Sesión";
+            document.getElementById("submitBtn").textContent = "Entrar";
+            return;
+          }
+
+          // LOGIN exitoso
+          localStorage.setItem("token", data.token);
+          localStorage.setItem(
+            "divisiones",
+            JSON.stringify(data.divisiones || [])
+          );
+          localStorage.setItem("role", data.role || "user");
+
+          showToast("✅ Bienvenido, " + username + "!");
+          setTimeout(() => (location.href = "manuales.html"), 1500);
+        } catch (err) {
+          console.error(err);
+          showToast("Error de conexión", "error");
+        }
+      };
+    </script>
+  </body>
+</html>

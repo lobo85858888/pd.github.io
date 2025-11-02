@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Panel de Administración</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        --bg: #f5f6fa;
+        --accent: #0984e3;
+        --accent-2: #3b82f6;
+        --muted: #888;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        background: var(--bg);
+        margin: 0;
+        padding: 0;
+        color: #333;
+      }
+
+      header {
+        background: #2f3640;
+        color: #fff;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      #who {
+        font-size: 0.9rem;
+        opacity: 0.95;
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        padding: 2rem;
+      }
+
+      section {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      h2 {
+        margin-top: 0;
+        color: #2f3640;
+        border-bottom: 2px solid #dcdde1;
+        padding-bottom: 0.5rem;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 60vh;
+        overflow-y: auto;
+      }
+
+      li {
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+      li .left {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .username {
+        font-weight: 600;
+      }
+      .role {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .btn {
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 10px;
+        cursor: pointer;
+        transition: transform 0.12s, box-shadow 0.12s;
+        font-size: 0.9rem;
+      }
+      .btn.small {
+        padding: 4px 8px;
+        font-size: 0.85rem;
+        border-radius: 5px;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(59, 130, 246, 0.18);
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--accent);
+        border: 1px solid #dbeafe;
+        box-shadow: none;
+      }
+      .btn.danger {
+        background: #e84118;
+      }
+
+      .logout {
+        background: #e84118;
+      }
+      .logout:hover {
+        background: #ff6b54;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      /* Toasts */
+      .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .toast {
+        background: rgba(30, 30, 30, 0.95);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        min-width: 220px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+        transform: translateX(20px);
+        opacity: 0;
+        animation: toastIn 0.28s forwards;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .toast.success {
+        border-left: 4px solid #00cc66;
+      }
+      .toast.error {
+        border-left: 4px solid #ff4d4d;
+      }
+      .toast.info {
+        border-left: 4px solid #00aaff;
+      }
+      @keyframes toastIn {
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      /* Modal (edición divisiones / confirm) */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        display: none;
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .modal {
+        background: #fff;
+        border-radius: 10px;
+        padding: 18px;
+        width: 100%;
+        max-width: 520px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      }
+      .modal h3 {
+        margin: 0 0 8px 0;
+      }
+      .chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 10px 0 12px 0;
+      }
+      .chip {
+        background: #f1f5f9;
+        padding: 6px 10px;
+        border-radius: 999px;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 0.92rem;
+        color: #1f2937;
+      }
+      .chip .x {
+        cursor: pointer;
+        color: #ef4444;
+        font-weight: 700;
+        margin-left: 4px;
+      }
+
+      .input-inline {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .input-inline input {
+        flex: 1;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid #dbe2ea;
+      }
+      .modal .row {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      /* small helpers */
+      .muted {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Panel de Administración</h1>
+      <div style="display: flex; gap: 16px; align-items: center">
+        <div id="who">Cargando...</div>
+        <button id="logout" class="btn logout">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <h2>Usuarios</h2>
+        <ul id="users"></ul>
+      </section>
+
+      <section>
+        <h2>Registros (Logs)</h2>
+        <ul id="logs"></ul>
+      </section>
+    </main>
+
+    <footer>© 2025 — Panel de administración</footer>
+
+    <!-- Toasts -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Modal backdrop -->
+    <div class="modal-backdrop" id="modal-backdrop">
+      <div class="modal" id="modal">
+        <!-- content injected -->
+      </div>
+    </div>
+
+    <script>
+      const API = "https://dawn-bar-8e7d.aritztoquero123.workers.dev/api";
+      const token = localStorage.getItem("token");
+      if (!token) location.href = "login.html";
+
+      // Toast helpers
+      const toastContainer = document.getElementById("toast-container");
+      function showToast(msg, type = "info", ms = 3500) {
+        const d = document.createElement("div");
+        d.className = `toast ${type}`;
+        d.textContent = msg;
+        toastContainer.appendChild(d);
+        setTimeout(() => (d.style.opacity = "1"), 10);
+        setTimeout(() => {
+          d.style.transition = "all .25s ease";
+          d.style.opacity = "0";
+          d.style.transform = "translateX(20px)";
+          setTimeout(() => d.remove(), 300);
+        }, ms);
+      }
+
+      // Confirm modal (returns promise)
+      const backdrop = document.getElementById("modal-backdrop");
+      const modal = document.getElementById("modal");
+      function showConfirm(title, text, confirmText = "Sí", cancelText = "No") {
+        return new Promise((resolve) => {
+          backdrop.style.display = "flex";
+          modal.innerHTML = `
+            <h3>${title}</h3>
+            <p class="muted">${text}</p>
+            <div class="row">
+              <button class="btn btn-cancel">${cancelText}</button>
+              <button class="btn btn-confirm">${confirmText}</button>
+            </div>
+          `;
+          modal.querySelector(".btn-confirm").focus();
+          modal.querySelector(".btn-cancel").addEventListener("click", () => {
+            backdrop.style.display = "none";
+            resolve(false);
+          });
+          modal.querySelector(".btn-confirm").addEventListener("click", () => {
+            backdrop.style.display = "none";
+            resolve(true);
+          });
+        });
+      }
+
+      // Division editor modal
+      function showDivisionsEditor(username, currentDivs = []) {
+        return new Promise((resolve) => {
+          backdrop.style.display = "flex";
+          modal.innerHTML = `
+            <h3>Editar divisiones — ${username}</h3>
+            <p class="muted">Máx. 5 divisiones. No se permiten duplicados.</p>
+            <div class="chips" id="chips"></div>
+            <div class="input-inline">
+              <input id="div-input" placeholder="Agregar división y pulsar Enter" />
+              <button class="btn small" id="add-btn">Añadir</button>
+            </div>
+            <div class="row">
+              <button class="btn btn-cancel">Cancelar</button>
+              <button class="btn btn-save">Guardar</button>
+            </div>
+          `;
+          const chipsEl = modal.querySelector("#chips");
+          const input = modal.querySelector("#div-input");
+          const addBtn = modal.querySelector("#add-btn");
+          let divs = [...currentDivs];
+
+          function renderChips() {
+            chipsEl.innerHTML = "";
+            for (const d of divs) {
+              const c = document.createElement("span");
+              c.className = "chip";
+              c.innerHTML = `${escapeHtml(
+                d
+              )} <span class="x" data-val="${escapeHtml(d)}">&times;</span>`;
+              chipsEl.appendChild(c);
+            }
+            // attach remove handlers
+            chipsEl.querySelectorAll(".x").forEach((x) =>
+              x.addEventListener("click", (ev) => {
+                const val = ev.target.getAttribute("data-val");
+                divs = divs.filter((d) => d !== val);
+                renderChips();
+              })
+            );
+          }
+          function addFromInput() {
+            const v = input.value.trim();
+            if (!v) return;
+            if (divs.includes(v)) {
+              showToast("No se permiten duplicados", "error");
+              input.value = "";
+              return;
+            }
+            if (divs.length >= 5) {
+              showToast("Máximo 5 divisiones", "error");
+              input.value = "";
+              return;
+            }
+            divs.push(v);
+            input.value = "";
+            renderChips();
+          }
+
+          renderChips();
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addFromInput();
+            }
+          });
+          addBtn.addEventListener("click", addFromInput);
+
+          modal.querySelector(".btn-cancel").addEventListener("click", () => {
+            backdrop.style.display = "none";
+            resolve(null);
+          });
+          modal.querySelector(".btn-save").addEventListener("click", () => {
+            backdrop.style.display = "none";
+            resolve(divs);
+          });
+
+          input.focus();
+        });
+      }
+
+      function escapeHtml(str) {
+        return String(str).replace(
+          /[&<>"']/g,
+          (s) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[s])
+        );
+      }
+
+      // API helpers with token
+      async function api(path, opts = {}) {
+        opts.headers = opts.headers || {};
+        opts.headers.Authorization = "Bearer " + token;
+        if (opts.body && typeof opts.body === "object") {
+          opts.body = JSON.stringify(opts.body);
+          opts.headers["Content-Type"] = "application/json";
+        }
+        const res = await fetch(API + path, opts);
+        let j;
+        try {
+          j = await res.json();
+        } catch {
+          j = null;
+        }
+        return { ok: res.ok, status: res.status, json: j };
+      }
+
+      // Load current user (me)
+      async function me() {
+        const r = await api("/me");
+        if (!r.ok) {
+          showToast("No autorizado, redirigiendo...", "error", 2000);
+          setTimeout(() => (location.href = "login.html"), 900);
+          return;
+        }
+        const j = r.json;
+        document.getElementById(
+          "who"
+        ).textContent = `Usuario: ${j.user} — Rol: ${j.role}`;
+        if (j.role !== "admin") {
+          showToast("Necesitas ser administrador para acceder.", "error", 2200);
+          setTimeout(() => (location.href = "index.html"), 900);
+        }
+      }
+
+      // Load users and render
+      async function loadUsers() {
+        const r = await api("/users");
+        const usersList = document.getElementById("users");
+        usersList.innerHTML = "";
+        if (!r.ok) {
+          const err = r.json?.error || "Error al cargar usuarios";
+          usersList.innerHTML = `<li class="muted">${err}</li>`;
+          showToast(err, "error");
+          return;
+        }
+        for (const u of r.json) {
+          const li = document.createElement("li");
+          const divs = Array.isArray(u.divisiones) ? u.divisiones : [];
+          li.innerHTML = `
+            <div class="left">
+              <div>
+                <div class="username">${escapeHtml(u.username)}</div>
+                <div class="role">${escapeHtml(u.role)} ${
+            divs.length ? "•" : ""
+          } <span class="muted">${divs.join(", ")}</span></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              ${
+                u.role !== "admin"
+                  ? `<button class="btn small promote-btn" data-user="${escapeHtml(
+                      u.username
+                    )}">Hacer Admin</button>`
+                  : `<button class="btn small ghost" disabled>Admin</button>`
+              }
+              <button class="btn small" data-edit="${escapeHtml(
+                u.username
+              )}">Editar Divisiones</button>
+            </div>
+          `;
+          usersList.appendChild(li);
+        }
+
+        // attach promote handlers
+        document.querySelectorAll(".promote-btn").forEach((b) => {
+          b.addEventListener("click", async () => {
+            const username = b.getAttribute("data-user");
+            const ok = await showConfirm(
+              "Confirmar promoción",
+              `¿Quieres ascender a ${username} a administrador?`,
+              "Ascender",
+              "Cancelar"
+            );
+            if (!ok) return;
+            showToast("Enviando solicitud...", "info", 1200);
+            // intenta llamar al PUT /api/users/:username (tu código original usaba eso)
+            const res = await api("/users/" + username, {
+              method: "PUT",
+              body: { role: "admin" },
+            });
+            if (res.ok) {
+              showToast(`${username} ahora es admin`, "success");
+              await loadUsers();
+              await loadLogs();
+            } else {
+              const err = res.json?.error || `Error ${res.status}`;
+              showToast(err, "error");
+            }
+          });
+        });
+
+        // attach edit divisions handlers
+        document.querySelectorAll("[data-edit]").forEach((b) => {
+          b.addEventListener("click", async () => {
+            const username = b.getAttribute("data-edit");
+            // obtener user actual desde la lista cargada (mejor: pedir /users y filtrar)
+            const user = (r.json || []).find(
+              (x) => x.username === username
+            ) || { divisiones: [] };
+            const resDivs = await showDivisionsEditor(
+              username,
+              user.divisiones || []
+            );
+            if (resDivs === null) return; // cancel
+            // Validaciones ya hechas en modal (no duplicados, max 5), pero aseguramos
+            const clean = [
+              ...new Set(resDivs.map((s) => String(s).trim()).filter(Boolean)),
+            ].slice(0, 5);
+            showToast("Guardando divisiones...", "info", 1000);
+            const res = await api("/users/divisiones/" + username, {
+              method: "PUT",
+              body: { divisiones: clean },
+            });
+            if (res.ok) {
+              showToast("Divisiones actualizadas", "success");
+              await loadUsers();
+              await loadLogs();
+            } else {
+              const err = res.json?.error || `Error ${res.status}`;
+              showToast(err, "error");
+            }
+          });
+        });
+      }
+
+      // Load logs
+      async function loadLogs() {
+        const r = await api("/logs");
+        const logsList = document.getElementById("logs");
+        logsList.innerHTML = "";
+        if (!r.ok) {
+          logsList.innerHTML = `<li class="muted">${
+            r.json?.error || "Error al cargar logs"
+          }</li>`;
+          return;
+        }
+        for (const l of r.json) {
+          const li = document.createElement("li");
+          li.textContent = `[${l.created_at}] ${l.actor} ${l.action} ${
+            l.target
+          } ${l.details || ""}`;
+          logsList.appendChild(li);
+        }
+      }
+
+      document.getElementById("logout").addEventListener("click", () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        location.href = "login.html";
+      });
+
+      (async () => {
+        await me();
+        await loadUsers();
+        await loadLogs();
+      })();
+    </script>
+  </body>
+</html>

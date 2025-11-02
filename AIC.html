@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manuales Del AIC</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Poppins", sans-serif;
+        overflow: hidden;
+        background: url("a.jpg") no-repeat center center fixed;
+        background-size: cover;
+      }
+
+      body::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.65);
+        z-index: 0;
+      }
+
+      .dashboard {
+        position: relative;
+        z-index: 1;
+        backdrop-filter: blur(15px);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 40px 60px;
+        border-radius: 25px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        animation: fadeIn 1s ease forwards;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .dashboard img.logo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 18px;
+        border: 3px solid rgba(255, 255, 255, 0.4);
+      }
+
+      .dashboard h1 {
+        color: #fff;
+        margin-bottom: 18px;
+        font-size: 26px;
+      }
+
+      .dashboard a {
+        text-decoration: none;
+        color: #fff;
+        background: linear-gradient(90deg, #3b82f6, #2563eb);
+        padding: 12px 20px;
+        border-radius: 10px;
+        transition: 0.3s;
+      }
+
+      .dashboard a:hover {
+        transform: translateY(-3px);
+        background: linear-gradient(90deg, #60a5fa, #3b82f6);
+      }
+
+      /* === NOTIFICACIÓN ESTILO FIVEM === */
+      .notification {
+        position: fixed;
+        top: 30px;
+        right: -400px;
+        background: rgba(15, 15, 15, 0.95);
+        color: #fff;
+        padding: 16px 22px;
+        border-radius: 14px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        opacity: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        letter-spacing: 0.3px;
+        border-left: 4px solid #f87171;
+        transition: all 0.4s ease;
+        backdrop-filter: blur(6px);
+      }
+
+      .notification.show {
+        right: 30px;
+        opacity: 1;
+      }
+
+      .notification .icon {
+        font-size: 18px;
+      }
+
+      .notification.success {
+        border-left-color: #22c55e;
+      }
+
+      /* overlay con animación */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        display: none;
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-size: 22px;
+        text-align: center;
+        animation: fadeInOverlay 0.6s ease forwards;
+      }
+
+      @keyframes fadeInOverlay {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .overlay.show {
+        display: flex;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="dashboard">
+      <img src="aic.png" alt="Logo" class="logo" />
+      <h1>Manuales Del AIC 🕵️</h1>
+      <a href="manuales.html">⬅️ Atrás</a>
+    </div>
+
+    <div id="notif" class="notification">
+      <span class="icon"></span><span class="msg"></span>
+    </div>
+    <div id="overlay" class="overlay">🚫 Acceso denegado — Redirigiendo...</div>
+
+    <script>
+      const API = "https://dawn-bar-8e7d.aritztoquero123.workers.dev/api";
+      const REDIRECT_DELAY = 2500;
+      const allowed = ["AIC"];
+
+      function showNotif(message, type = "error") {
+        const notif = document.getElementById("notif");
+        const icon = notif.querySelector(".icon");
+        const msg = notif.querySelector(".msg");
+
+        notif.className =
+          "notification " + (type === "success" ? "success" : "error");
+        icon.textContent = type === "success" ? "✅" : "🚫";
+        msg.textContent = message;
+
+        // mostrar
+        setTimeout(() => notif.classList.add("show"), 50);
+        // ocultar
+        setTimeout(() => notif.classList.remove("show"), 3600);
+      }
+
+      function showOverlayAndRedirect(message) {
+        const ov = document.getElementById("overlay");
+        ov.textContent = "🚫 " + message + " — Serás redirigido...";
+        ov.classList.add("show");
+        setTimeout(
+          () => (window.location.href = "manuales.html"),
+          REDIRECT_DELAY
+        );
+      }
+
+      async function verificarDivision() {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          showNotif("No hay sesión activa.", "error");
+          return setTimeout(
+            () => (window.location.href = "manuales.html"),
+            REDIRECT_DELAY
+          );
+        }
+
+        try {
+          const res = await fetch(API + "/me", {
+            headers: { Authorization: "Bearer " + token },
+          });
+
+          if (!res.ok) {
+            showNotif("Sesión inválida o token expirado.", "error");
+            return setTimeout(
+              () => (window.location.href = "manuales.html"),
+              REDIRECT_DELAY
+            );
+          }
+
+          const j = await res.json();
+          let divisiones = [];
+
+          if (Array.isArray(j.divisiones)) divisiones = j.divisiones;
+          else if (j.division) divisiones = [j.division];
+          else {
+            const fromLS = localStorage.getItem("divisiones");
+            divisiones = fromLS ? JSON.parse(fromLS) : [];
+          }
+
+          const divSet = new Set(
+            divisiones.map((d) => String(d).trim().toUpperCase())
+          );
+
+          if (divSet.has("SUPER")) {
+            showNotif("Acceso autorizado (SUPER).", "success");
+            return;
+          }
+
+          const ok = allowed.some((d) => divSet.has(d.toUpperCase()));
+          if (ok) {
+            showNotif("Acceso autorizado (AIC).", "success");
+            return;
+          }
+
+          showNotif("No tienes permiso para acceder a AIC.", "error");
+          showOverlayAndRedirect("Acceso denegado");
+        } catch (err) {
+          showNotif("Error al verificar permisos.", "error");
+          setTimeout(
+            () => (window.location.href = "manuales.html"),
+            REDIRECT_DELAY
+          );
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", verificarDivision);
+    </script>
+  </body>
+</html>

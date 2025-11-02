@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Código Penal</title>
+    <style>
+      body {
+        background: #141414;
+        color: #fff;
+        font-family: "Segoe UI", sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow-y: scroll;
+      }
+
+      header {
+        text-align: center;
+        padding: 20px 10px 10px;
+        background: #1e1e1e;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        color: #7fe0ff;
+        text-shadow: 0 0 12px #0077ff;
+        margin: 0;
+      }
+
+      a {
+        display: inline-block;
+        color: #7fe0ff;
+        text-decoration: none;
+        margin-top: 6px;
+        font-size: 0.95rem;
+        opacity: 0.9;
+        transition: 0.2s;
+      }
+
+      a:hover {
+        opacity: 1;
+        text-shadow: 0 0 6px #0077ff;
+      }
+
+      #search-box {
+        margin-top: 12px;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      #search-input {
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 1px solid #0077ff44;
+        background: #2a2a2a;
+        color: #fff;
+        font-size: 1rem;
+        width: 220px;
+        outline: none;
+        transition: 0.2s;
+      }
+
+      #search-input:focus {
+        border-color: #7fe0ff;
+        box-shadow: 0 0 8px #0077ff;
+      }
+
+      #search-button,
+      #next-button {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(90deg, #0077ff, #00aaff);
+        color: #fff;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.25s;
+      }
+
+      #search-button:hover,
+      #next-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 12px #0077ff;
+      }
+
+      #pdf-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 30px 0;
+      }
+
+      .pdf-page {
+        margin-bottom: 25px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+        border-radius: 25px;
+        overflow: hidden;
+        animation: fadeIn 0.6s ease;
+        background: #2c2c2c;
+        /* Se eliminó el efecto de hover */
+      }
+
+      canvas {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #aaa;
+        font-size: 0.9rem;
+      }
+
+      .footer a {
+        color: #7fe0ff;
+      }
+
+      /* 🔔 Toast Notifications estilo FiveM */
+      .toast-container {
+        position: fixed;
+        top: 25px;
+        right: 25px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .toast {
+        background: rgba(30, 30, 30, 0.95);
+        border-left: 4px solid #0077ff;
+        padding: 12px 18px;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 0.95rem;
+        min-width: 220px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+        opacity: 0;
+        transform: translateX(50px);
+        animation: slideIn 0.3s forwards, fadeOut 0.5s ease 3s forwards;
+      }
+
+      .toast.success {
+        border-left-color: #00cc66;
+      }
+
+      .toast.error {
+        border-left-color: #ff3333;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes fadeOut {
+        to {
+          opacity: 0;
+          transform: translateX(50px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Código Penal</h1>
+      <a href="index.html">⬅️ Atrás</a>
+      <div id="search-box">
+        <input type="text" id="search-input" placeholder="Buscar palabra..." />
+        <button id="search-button">Buscar</button>
+        <button id="next-button">Siguiente</button>
+      </div>
+    </header>
+
+    <div id="pdf-container"></div>
+
+    <div class="footer">
+      © Academia de Justicia — <a href="#">Volver al inicio</a>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+      const url = "1.pdf";
+      const container = document.getElementById("pdf-container");
+      const searchInput = document.getElementById("search-input");
+      const searchButton = document.getElementById("search-button");
+      const nextButton = document.getElementById("next-button");
+      const toastContainer = document.getElementById("toast-container");
+
+      let pdfDoc = null;
+      let matches = [];
+      let currentMatchIndex = 0;
+
+      // --- Función de notificación tipo FiveM ---
+      function showToast(message, type = "info") {
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+          toast.remove();
+        }, 3500);
+      }
+
+      async function renderPDF() {
+        pdfDoc = await pdfjsLib.getDocument(url).promise;
+        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+          const page = await pdfDoc.getPage(pageNum);
+          const viewport = page.getViewport({ scale: 1.4 });
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          const pageDiv = document.createElement("div");
+          pageDiv.className = "pdf-page";
+          pageDiv.dataset.page = pageNum;
+          pageDiv.appendChild(canvas);
+          container.appendChild(pageDiv);
+
+          await page.render({ canvasContext: context, viewport }).promise;
+        }
+      }
+
+      async function searchPDF(term) {
+        matches = [];
+        currentMatchIndex = 0;
+        const lowerTerm = term.toLowerCase();
+
+        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+          const page = await pdfDoc.getPage(pageNum);
+          const textContent = await page.getTextContent();
+          const text = textContent.items.map((item) => item.str).join(" ");
+          if (text.toLowerCase().includes(lowerTerm)) {
+            matches.push(pageNum);
+          }
+        }
+
+        if (matches.length > 0) {
+          showToast(
+            `🔍 ${matches.length} coincidencia(s) encontradas.`,
+            "success"
+          );
+          goToPage(matches[0]);
+        } else {
+          showToast("❌ No se encontraron resultados.", "error");
+        }
+      }
+
+      function goToPage(pageNum) {
+        const target = document.querySelector(`[data-page='${pageNum}']`);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "center" });
+          showToast(`📄 Página ${pageNum}`, "info");
+        }
+      }
+
+      searchButton.addEventListener("click", () => {
+        const term = searchInput.value.trim();
+        if (term) searchPDF(term);
+      });
+
+      nextButton.addEventListener("click", () => {
+        if (matches.length === 0) return;
+        currentMatchIndex = (currentMatchIndex + 1) % matches.length;
+        goToPage(matches[currentMatchIndex]);
+      });
+
+      renderPDF();
+    </script>
+  </body>
+</html>

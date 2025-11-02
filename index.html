@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Poppins", sans-serif;
+        overflow: hidden;
+
+        /* Imagen de fondo */
+        background: url("a.jpg") no-repeat center center fixed;
+        background-size: cover;
+      }
+
+      /* Capa oscura encima de la imagen */
+      body::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.65); /* capa oscura semiopaca */
+        z-index: 0;
+      }
+
+      .dashboard {
+        position: relative;
+        z-index: 1;
+        backdrop-filter: blur(15px);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 40px 60px;
+        border-radius: 25px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+        animation: fadeIn 1s ease forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* LOGO CIRCULAR */
+      .dashboard img.logo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        margin-bottom: 20px;
+        background-color: rgba(
+          255,
+          255,
+          255,
+          0.1
+        ); /* por si tiene transparencia */
+      }
+
+      .dashboard h1 {
+        color: #fff;
+        margin-bottom: 25px;
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        flex-wrap: wrap;
+      }
+
+      .dashboard a {
+        text-decoration: none;
+        color: #fff;
+        background: linear-gradient(90deg, #3b82f6, #2563eb);
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        box-shadow: 0 3px 10px rgba(59, 130, 246, 0.4);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Efecto onda */
+      .dashboard a::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+        opacity: 0;
+      }
+
+      .dashboard a:active::after {
+        width: 200%;
+        height: 200%;
+        opacity: 1;
+        transition: 0s;
+      }
+
+      .dashboard a:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 5px 20px rgba(59, 130, 246, 0.6);
+        background: linear-gradient(90deg, #60a5fa, #3b82f6);
+      }
+
+      .dashboard a:active {
+        transform: scale(0.96);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <!-- LOGO -->
+      <img src="a1.png" alt="Logo del Panel" class="logo" />
+
+      <h1>Panel de Control</h1>
+      <div class="button-container">
+        <a href="rangos.html">Rangos</a>
+        <a href="manuales.html">manuales</a>
+        <a href="Codigo_Penal.html">Codigo Penal</a>
+      </div>
+    </div>
+  </body>
+</html>

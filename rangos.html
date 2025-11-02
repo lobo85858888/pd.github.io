@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Panel de los Oficiales - AIC</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Winky+Sans:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Winky Sans", sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        background: url("a.jpg") no-repeat center center fixed;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 40px 20px;
+        color: #fff;
+        overflow-y: auto;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 15, 30, 0.7);
+        z-index: 0;
+      }
+
+      .panel-card {
+        position: relative;
+        z-index: 1;
+        backdrop-filter: blur(12px);
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 35px;
+        width: 100%;
+        max-width: 950px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 35px rgba(0, 0, 0, 0.6);
+        animation: fadeIn 0.7s ease forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h1 {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+        text-align: center;
+      }
+
+      .row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+      }
+
+      input,
+      select {
+        padding: 12px 14px;
+        border-radius: 8px;
+        border: none;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        flex: 1;
+        outline: none;
+        transition: background 0.2s ease;
+      }
+
+      input:focus,
+      select:focus {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      button {
+        padding: 10px 16px;
+        border-radius: 8px;
+        border: none;
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 12px rgba(0, 242, 254, 0.5);
+      }
+
+      ul {
+        list-style: none;
+        margin-top: 15px;
+        padding: 0;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+
+      li {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.08);
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .actions button.edit {
+        background: #f5a623;
+      }
+
+      .actions button.delete {
+        background: #eb5757;
+      }
+
+      .footer {
+        margin-top: 20px;
+        text-align: right;
+      }
+
+      a {
+        color: #7fe0ff;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      a:hover {
+        color: #b7ffff;
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .modal-content {
+        background: rgba(45, 45, 45, 0.9);
+        padding: 25px;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+      }
+
+      .notif {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        padding: 14px 22px;
+        border-radius: 12px;
+        font-weight: 600;
+        color: #fff;
+        display: none;
+        opacity: 0;
+        transition: all 0.4s ease;
+        z-index: 50;
+      }
+
+      .notif.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(-10px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panel-card">
+      <h1>Gestión de Oficiales - AIC</h1>
+
+      <div class="row">
+        <input id="search" placeholder="Buscar oficial..." />
+        <button id="btnSearch">Buscar</button>
+        <div style="flex: 1"></div>
+        <a href="admin.html">Administración</a>
+        <a href="index.html">⬅️ Volver</a>
+      </div>
+
+      <!-- Solo visible para administradores -->
+      <div class="row admin-only" style="display: none">
+        <input id="officer_name" placeholder="officer_name (debe incluir _)" />
+        <select id="role">
+          <option value="">Rango...</option>
+          <option>Comandante en jefe</option>
+          <option>Comisario General</option>
+          <option>Capitan Primero</option>
+          <option>Capitan</option>
+          <option>Teniente Primero</option>
+          <option>Teniente</option>
+          <option>Sub Teniente</option>
+          <option>Sargento Mayor</option>
+          <option>Sargento Primero</option>
+          <option>Sargento Segundo</option>
+          <option>Oficial I</option>
+          <option>Oficial II</option>
+          <option>Oficial III</option>
+          <option>Cadete</option>
+        </select>
+        <input id="asignacion" placeholder="Asignación (#...)" />
+        <input id="division" placeholder="División" />
+        <button id="create">➕ Crear</button>
+      </div>
+
+      <ul id="list"></ul>
+
+      <div class="footer">
+        <a href="#" id="logout">Cerrar sesión</a>
+      </div>
+    </div>
+
+    <div class="modal" id="editModal">
+      <div class="modal-content">
+        <h3>Editar oficial</h3>
+        <select id="editRole">
+          <option value="">Rango...</option>
+          <option>Comandante en jefe</option>
+          <option>Comisario General</option>
+          <option>Capitan Primero</option>
+          <option>Capitan</option>
+          <option>Teniente Primero</option>
+          <option>Teniente</option>
+          <option>Sub Teniente</option>
+          <option>Sargento Mayor</option>
+          <option>Sargento Primero</option>
+          <option>Sargento Segundo</option>
+          <option>Oficial I</option>
+          <option>Oficial II</option>
+          <option>Oficial III</option>
+          <option>Cadete</option>
+        </select>
+        <input id="editAsign" placeholder="Nueva asignación" />
+        <input id="editDiv" placeholder="Nueva división" />
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+          "
+        >
+          <button id="saveEdit">Guardar</button>
+          <button onclick="closeModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="notif" id="notif"></div>
+
+    <script>
+      const API = "https://dawn-bar-8e7d.aritztoquero123.workers.dev/api";
+      const token = localStorage.getItem("token");
+      if (!token) location.href = "login.html";
+
+      let userData = null;
+      let currentEdit = null;
+
+      const notif = document.getElementById("notif");
+      function showNotif(msg, color = "#4caf50") {
+        notif.style.background = color;
+        notif.textContent = msg;
+        notif.classList.add("show");
+        setTimeout(() => notif.classList.remove("show"), 3000);
+      }
+
+      async function checkUser() {
+        try {
+          const res = await fetch(API + "/me", {
+            headers: { Authorization: "Bearer " + token },
+          });
+          if (!res.ok) throw new Error();
+          userData = await res.json();
+
+          if (userData.role === "admin") {
+            document
+              .querySelectorAll(".admin-only")
+              .forEach((el) => (el.style.display = "flex"));
+          } else {
+            showNotif("Modo lectura: sin permisos de administrador", "#f39c12");
+          }
+        } catch {
+          localStorage.removeItem("token");
+          location.href = "login.html";
+        }
+      }
+
+      async function load(q = "") {
+        const url =
+          API + "/officers" + (q ? "?search=" + encodeURIComponent(q) : "");
+        const res = await fetch(url, {
+          headers: { Authorization: "Bearer " + token },
+        });
+        let data = await res.json();
+
+        // Orden jerárquico de mayor a menor rango
+        const rankOrder = [
+          "Comandante en jefe",
+          "Comisario General",
+          "Capitan Primero",
+          "Capitan",
+          "Teniente Primero",
+          "Teniente",
+          "Sub Teniente",
+          "Sargento Mayor",
+          "Sargento Primero",
+          "Sargento Segundo",
+          "Oficial I",
+          "Oficial II",
+          "Oficial III",
+          "Cadete",
+        ];
+
+        data.sort(
+          (a, b) => rankOrder.indexOf(a.role) - rankOrder.indexOf(b.role)
+        );
+
+        const ul = document.getElementById("list");
+        ul.innerHTML = "";
+
+        data.forEach((item) => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <div>
+              <strong>${item.officer_name}</strong> — ${item.role}<br>
+              <small style="color:#9fbcd4;">${item.asignacion || "#---"} • ${
+            item.division || "Sin división"
+          }</small>
+            </div>
+          `;
+          const act = document.createElement("div");
+          act.className = "actions";
+
+          if (userData?.role === "admin") {
+            const editBtn = document.createElement("button");
+            editBtn.className = "edit";
+            editBtn.textContent = "✏️";
+            editBtn.onclick = () => openModal(item);
+
+            const delBtn = document.createElement("button");
+            delBtn.className = "delete";
+            delBtn.textContent = "🗑️";
+            delBtn.onclick = async () => {
+              if (!confirm("¿Eliminar este oficial?")) return;
+              await fetch(API + "/officers/" + item.id, {
+                method: "DELETE",
+                headers: { Authorization: "Bearer " + token },
+              });
+              showNotif("Eliminado correctamente", "#e74c3c");
+              load();
+            };
+
+            act.appendChild(editBtn);
+            act.appendChild(delBtn);
+          }
+
+          li.appendChild(act);
+          ul.appendChild(li);
+        });
+      }
+
+      function openModal(item) {
+        currentEdit = item;
+        document.getElementById("editRole").value = item.role;
+        document.getElementById("editAsign").value = item.asignacion || "";
+        document.getElementById("editDiv").value = item.division || "";
+        document.getElementById("editModal").style.display = "flex";
+      }
+
+      function closeModal() {
+        document.getElementById("editModal").style.display = "none";
+      }
+
+      document
+        .getElementById("saveEdit")
+        .addEventListener("click", async () => {
+          if (!currentEdit) return;
+          const body = {
+            role: document.getElementById("editRole").value,
+            asignacion: document.getElementById("editAsign").value,
+            division: document.getElementById("editDiv").value,
+          };
+          await fetch(API + "/officers/" + currentEdit.id, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify(body),
+          });
+          closeModal();
+          showNotif("Actualizado correctamente");
+          load();
+        });
+
+      document.getElementById("btnSearch").addEventListener("click", () => {
+        const q = document.getElementById("search").value.trim();
+        load(q);
+      });
+
+      document.getElementById("create").addEventListener("click", async () => {
+        if (userData?.role !== "admin")
+          return showNotif("Sin permisos para crear", "#e74c3c");
+
+        const body = {
+          officer_name: document.getElementById("officer_name").value,
+          role: document.getElementById("role").value,
+          asignacion: document.getElementById("asignacion").value,
+          division: document.getElementById("division").value,
+        };
+
+        const res = await fetch(API + "/officers", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify(body),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showNotif("Oficial creado correctamente");
+          load();
+        } else {
+          showNotif(data.error || "Error al crear", "#e74c3c");
+        }
+      });
+
+      document.getElementById("logout").addEventListener("click", () => {
+        localStorage.removeItem("token");
+        location.href = "login.html";
+      });
+
+      checkUser().then(load);
+    </script>
+  </body>
+</html>
