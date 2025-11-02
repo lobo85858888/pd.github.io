@@ -203,7 +203,7 @@
           localStorage.setItem("role", data.role || "user");
 
           showToast("✅ Bienvenido, " + username + "!");
-          setTimeout(() => (location.href = "manuales.html"), 1500);
+          setTimeout(() => (location.href = "index.html"), 1500);
         } catch (err) {
           console.error(err);
           showToast("Error de conexión", "error");
