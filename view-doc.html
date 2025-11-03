@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ver documento</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 24px;
+        background: #071026;
+        color: #e6f0ff;
+        font-family: Inter, system-ui;
+      }
+      .container {
+        max-width: 980px;
+        margin: 0 auto;
+      }
+      .back {
+        display: inline-block;
+        margin-bottom: 10px;
+        color: #7dd3fc;
+        text-decoration: none;
+      }
+      .header h1 {
+        margin: 6px 0;
+        font-size: 1.4rem;
+      }
+      .meta {
+        opacity: 0.8;
+        color: #9fb2c8;
+        margin-bottom: 12px;
+      }
+      .doc {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        padding: 18px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+      }
+      .doc img {
+        max-width: 100%;
+        border-radius: 8px;
+        margin: 10px 0;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a class="back" href="docs.html">← Volver</a>
+      <div class="header">
+        <h1 id="title">Cargando...</h1>
+        <div id="meta" class="meta"></div>
+      </div>
+
+      <div id="doc" class="doc">Cargando contenido...</div>
+    </div>
+
+    <script>
+      const API = "https://dawn-bar-8e7d.aritztoquero123.workers.dev/api";
+      const token = localStorage.getItem("token");
+      if (!token) location.href = "login.html";
+      const params = new URLSearchParams(location.search);
+      const id = params.get("id");
+      if (!id) location.href = "docs.html";
+
+      function escapeHtml(s) {
+        return String(s || "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[c])
+        );
+      }
+
+      // render: convert markdown images and plain image URLs to <img>, preserve paragraphs
+      function renderContent(raw) {
+        let t = escapeHtml(raw);
+        t = t.replace(
+          /!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g,
+          (m, alt, url) => {
+            if (/i\.imgur\.com|\.jpg|\.jpeg|\.png|\.gif|\.webp/i.test(url))
+              return `<div><img src="${url}" alt="${escapeHtml(alt)}"></div>`;
+            return `<a href="${url}" target="_blank" rel="noopener">${url}</a>`;
+          }
+        );
+        t = t.replace(/(https?:\/\/[^\s<]+)/g, (url) => {
+          if (/i\.imgur\.com|\.jpg|\.jpeg|\.png|\.gif|\.webp/i.test(url))
+            return `<div><img src="${url}"></div>`;
+          return `<a href="${url}" target="_blank" rel="noopener" style="color:#7dd3fc">${url}</a>`;
+        });
+        return t
+          .split(/\n{2,}/)
+          .map(
+            (p) =>
+              `<p style="line-height:1.6;margin:10px 0">${p.replace(
+                /\n/g,
+                "<br/>"
+              )}</p>`
+          )
+          .join("");
+      }
+
+      (async () => {
+        try {
+          const r = await fetch(API + "/docs/" + encodeURIComponent(id), {
+            headers: { Authorization: "Bearer " + token },
+          });
+          const j = await r.json();
+          if (!r.ok) {
+            alert(j.error || "No autorizado");
+            location.href = "docs.html";
+            return;
+          }
+          document.getElementById("title").textContent = j.title;
+          document.getElementById(
+            "meta"
+          ).textContent = `Por ${j.author} — ${j.created_at}`;
+          // apply style
+          const style = j.style || {};
+          const docEl = document.getElementById("doc");
+          if (style.font) docEl.style.fontFamily = style.font;
+          if (style.size) docEl.style.fontSize = style.size;
+          if (style.underline) docEl.style.textDecoration = "underline";
+          docEl.innerHTML = renderContent(j.content || "");
+        } catch (e) {
+          console.error(e);
+          alert("Error al cargar");
+          location.href = "docs.html";
+        }
+      })();
+    </script>
+  </body>
+</html>

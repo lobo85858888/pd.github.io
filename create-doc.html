@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Crear documento</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #071026;
+        --card: #0b1630;
+        --accent: #06b6d4;
+        --danger: #ff6b6b;
+        --muted: #9fb2c8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 28px;
+        display: flex;
+        justify-content: center;
+        background: linear-gradient(180deg, #081226, #0b1220);
+        color: #e6f0ff;
+        font-family: Inter, system-ui;
+      }
+      .card {
+        width: 920px;
+        max-width: 96%;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        padding: 18px;
+        border-radius: 12px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .h-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+      }
+      .controls {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 0;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .btn.primary {
+        background: linear-gradient(90deg, var(--accent), #3b82f6);
+        color: #022;
+      }
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .input,
+      textarea,
+      select {
+        background: rgba(255, 255, 255, 0.02);
+        border: 0;
+        color: inherit;
+        padding: 10px;
+        border-radius: 8px;
+      }
+      .input {
+        flex: 1;
+      }
+      textarea {
+        width: 100%;
+        min-height: 300px;
+        resize: vertical;
+      }
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .divisions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .divisions label {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 6px 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: var(--muted);
+      }
+      .note {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+      }
+      .preview {
+        border-radius: 8px;
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.25);
+        color: inherit;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="header">
+        <div class="h-title">Crear documento</div>
+        <div class="controls">
+          <button id="save" class="btn ghost">Guardar borrador</button>
+          <button id="publish" class="btn primary">Publicar</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <input
+          id="title"
+          class="input"
+          placeholder="Título (ej: Informe turno...)"
+        />
+      </div>
+
+      <div class="toolbar">
+        <label>Fuente</label>
+        <select id="font" class="input" style="width: 170px">
+          <option value="Inter, sans-serif">Inter</option>
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="Times New Roman, serif">Times</option>
+        </select>
+        <label style="margin-left: 6px">Tamaño</label>
+        <select id="size" class="input" style="width: 110px">
+          <option value="16px">16</option>
+          <option value="18px" selected>18</option>
+          <option value="20px">20</option>
+          <option value="22px">22</option>
+        </select>
+        <label style="margin-left: 8px"
+          ><input id="underline" type="checkbox" /> Subrayar</label
+        >
+      </div>
+
+      <div class="row">
+        <input
+          id="imgurl"
+          class="input"
+          placeholder="Pega enlace directo de imagen (ej: https://i.imgur.com/abc.jpg)"
+        />
+        <button id="insertImg" class="btn ghost">Insertar</button>
+        <button id="insertMdImg" class="btn ghost">Insertar (Markdown)</button>
+      </div>
+
+      <textarea
+        id="content"
+        placeholder="Escribe aquí. Puedes pegar URLs sueltas de imágenes en cualquier lugar."
+      ></textarea>
+
+      <div style="margin-top: 10px">
+        <div style="font-weight: 700; margin-bottom: 6px">
+          Divisiones (elige una o varias) — SUPER siempre
+        </div>
+        <div class="divisions">
+          <label><input class="div" type="checkbox" value="AIC" /> AIC</label>
+          <label
+            ><input class="div" type="checkbox" value="METRO" /> METRO</label
+          >
+          <label><input class="div" type="checkbox" value="DSA" /> DSA</label>
+          <label><input class="div" type="checkbox" value="FTO" /> FTO</label>
+          <label style="opacity: 0.95"
+            ><input
+              class="div"
+              id="superChk"
+              type="checkbox"
+              value="SUPER"
+              checked
+              disabled
+            />
+            SUPER</label
+          >
+        </div>
+        <div class="note">
+          Al publicar se notificará por Discord a las divisiones seleccionadas
+          (y a SUPER). Usa URLs directas a imágenes (i.imgur.com/...).
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="preview" id="previewText">Vista previa rápida</div>
+        <div style="display: flex; gap: 8px">
+          <button id="btnBack" class="btn ghost">⬅️ Volver</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* -------------- CONFIG -------------- */
+      const API = "https://dawn-bar-8e7d.aritztoquero123.workers.dev/api";
+      const token = localStorage.getItem("token");
+      if (!token) location.href = "login.html";
+
+      // Usa servidor si quieres (recomendado). Si no, envío directo (funciona si Discord permite CORS desde tu origen).
+      const USE_SERVER_NOTIFY = false;
+      const SERVER_NOTIFY_ENDPOINT = "/notify-discord";
+
+      // Webhooks (mapa)
+      const DISCORD_WEBHOOKS = {
+        AIC: "https://discord.com/api/webhooks/1434928263360155649/uT7FB6cGKDw67AMZ_6M4bxUejAGz-fI6YWPtM3AbU93wAFvhD03m9MlVEYYQdwRqoYQj",
+        METRO:
+          "https://discord.com/api/webhooks/1434928476338524171/RGTJaIQsBKnk3OMQAEJQ_jHvluFIYOvXs7Aa5KMxYSo_gAdgt1fSiV8XXNYdY_bHBhNb",
+        FTO: "https://discord.com/api/webhooks/1434928565375209482/OUqqsCJ5VaEqUkwk0n7QVE_shi_VGzO-Uhv-uiid5N15upW4ZpxiS4J_Kgw8EIYBzYyC",
+        DSA: "https://discord.com/api/webhooks/1434928648661766285/QEM-EXQS1SSYsKhwvxOwBLPEqh7JLlSDikNDwwDWGBhgrvUaFOC4C26_J1ICNug_ZfZA",
+      };
+
+      // REEMPLAZA por los Role IDs reales para que se haga ping: (si no los pones, hace fallback textual)
+      const DISCORD_ROLE_IDS = {
+        AIC: "1434930322830659706",
+        METRO: "1434930363976777808",
+        FTO: "1434930501210214492",
+        DSA: "1434930467462844658",
+        SUPER: "1434930528867319848",
+      };
+
+      /* -------------- UTIL -------------- */
+      function getStyle() {
+        return {
+          font: document.getElementById("font").value,
+          size: document.getElementById("size").value,
+          underline: !!document.getElementById("underline").checked,
+        };
+      }
+      function collectDivs() {
+        return Array.from(document.querySelectorAll(".div"))
+          .filter((ch) => ch.checked)
+          .map((ch) => ch.value)
+          .concat(["SUPER"])
+          .filter((v, i, a) => a.indexOf(v) === i);
+      }
+      function escapeHtml(s) {
+        return String(s || "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[c])
+        );
+      }
+
+      function renderContent(raw) {
+        let t = escapeHtml(raw);
+        t = t.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, (m, a, url) => {
+          if (/i\.imgur\.com|\.jpg|\.jpeg|\.png|\.gif|\.webp/i.test(url))
+            return `<div style="margin:10px 0"><img src="${url}" style="max-width:100%;border-radius:8px"></div>`;
+          return `<a href="${url}" target="_blank" rel="noopener">${url}</a>`;
+        });
+        t = t.replace(/(https?:\/\/[^\s<]+)/g, (url) => {
+          if (/i\.imgur\.com|\.jpg|\.jpeg|\.png|\.gif|\.webp/i.test(url))
+            return `<div style="margin:10px 0"><img src="${url}" style="max-width:100%;border-radius:8px"></div>`;
+          return `<a href="${url}" target="_blank" rel="noopener" style="color:#7dd3fc">${url}</a>`;
+        });
+        return t
+          .split(/\n{2,}/)
+          .map(
+            (p) =>
+              `<p style="margin:8px 0;line-height:1.6">${p.replace(
+                /\n/g,
+                "<br/>"
+              )}</p>`
+          )
+          .join("");
+      }
+
+      /* -------------- UI handlers -------------- */
+      document.getElementById("insertImg").onclick = () => {
+        const url = document.getElementById("imgurl").value.trim();
+        if (!url) return alert("Pega URL de imagen directa.");
+        const ct = document.getElementById("content");
+        ct.value = ct.value + "\n" + url + "\n";
+        document.getElementById("imgurl").value = "";
+        updatePreview();
+      };
+      document.getElementById("insertMdImg").onclick = () => {
+        const url = document.getElementById("imgurl").value.trim();
+        if (!url) return alert("Pega URL de imagen directa.");
+        const ct = document.getElementById("content");
+        ct.value = ct.value + `\n![img](${url})\n`;
+        document.getElementById("imgurl").value = "";
+        updatePreview();
+      };
+      function updatePreview() {
+        const title =
+          document.getElementById("title").value.trim() || "Vista previa";
+        const content = document.getElementById("content").value || "";
+        const style = getStyle();
+        const p = document.getElementById("previewText");
+        p.innerHTML = `<div style="font-family:${style.font};font-size:${
+          style.size
+        };${
+          style.underline ? "text-decoration:underline" : ""
+        }"><strong>${escapeHtml(
+          title
+        )}</strong><div style="margin-top:8px">${renderContent(
+          content
+        )}</div></div>`;
+      }
+      document
+        .getElementById("content")
+        .addEventListener("input", updatePreview);
+      document.getElementById("title").addEventListener("input", updatePreview);
+      document.getElementById("font").addEventListener("change", updatePreview);
+      document.getElementById("size").addEventListener("change", updatePreview);
+      document
+        .getElementById("underline")
+        .addEventListener("change", updatePreview);
+      document.getElementById("btnBack").onclick = () =>
+        (location.href = "docs.html");
+
+      async function send(endpoint, body) {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify(body),
+        });
+        return res;
+      }
+
+      /* -------------- obtener usuario actual -------------- */
+      async function getCurrentUser() {
+        try {
+          const r = await fetch(API + "/me", {
+            headers: {
+              Authorization: "Bearer " + token,
+              "Content-Type": "application/json",
+            },
+          });
+          if (!r.ok) throw new Error("no me");
+          const j = await r.json();
+          return (
+            j.name ||
+            j.username ||
+            j.displayName ||
+            j.email ||
+            localStorage.getItem("username") ||
+            "Usuario desconocido"
+          );
+        } catch (err) {
+          return localStorage.getItem("username") || "Usuario desconocido";
+        }
+      }
+
+      /* -------------- construcción simple (solo texto) y envío -------------- */
+
+      function mentionOrText(division) {
+        // si hay role id devuelve <@&ID>, si no devuelve @division textual (minus)
+        const roleId = DISCORD_ROLE_IDS[division] || null;
+        if (roleId) return { mention: `<@&${roleId}>`, id: roleId };
+        return { mention: `@${division.toLowerCase()}`, id: null };
+      }
+
+      function buildSimplePayload(division, title, authorName) {
+        const divInfo = mentionOrText(division);
+        const superInfo = mentionOrText("SUPER");
+        const content = `${divInfo.mention} ${superInfo.mention}\nNuevo documento subido \nTítulo: ${title}`;
+        const allowed_roles = [];
+        if (divInfo.id) allowed_roles.push(divInfo.id);
+        if (superInfo.id && !allowed_roles.includes(superInfo.id))
+          allowed_roles.push(superInfo.id);
+        const payload = {
+          content,
+          allowed_mentions: { parse: [], roles: allowed_roles, users: [] },
+        };
+        return payload;
+      }
+
+      async function postToWebhookUrl(url, payload) {
+        try {
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!res.ok) {
+            const txt = await res.text().catch(() => "");
+            throw new Error("HTTP " + res.status + " " + txt);
+          }
+          return { ok: true };
+        } catch (err) {
+          console.warn("Error enviando webhook:", err);
+          return { ok: false, error: String(err) };
+        }
+      }
+
+      async function notifyDiscordClient(divisions, title, authorName) {
+        const divs = [...new Set(divisions.filter((d) => d && d !== "SUPER"))];
+        const results = [];
+        for (const div of divs) {
+          const url = DISCORD_WEBHOOKS[div];
+          if (!url) {
+            results.push({
+              division: div,
+              ok: false,
+              error: "Webhook no configurada",
+            });
+            continue;
+          }
+          const payload = buildSimplePayload(div, title, authorName);
+          const r = await postToWebhookUrl(url, payload);
+          results.push({ division: div, ...r });
+        }
+        return results;
+      }
+
+      async function notifyDiscordServer(divisions, title, authorName) {
+        try {
+          const r = await fetch(SERVER_NOTIFY_ENDPOINT, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify({ divisions, title, authorName }),
+          });
+          const j = await r.json().catch(() => ({}));
+          return { ok: r.ok, body: j };
+        } catch (err) {
+          console.warn("Error notificando al servidor:", err);
+          return { ok: false, error: String(err) };
+        }
+      }
+
+      /* -------------- botones save/publish -------------- */
+
+      document.getElementById("save").onclick = async () => {
+        const title = document.getElementById("title").value.trim();
+        const content = document.getElementById("content").value.trim();
+        if (!title || !content) return alert("Rellena título y contenido.");
+        const style = getStyle();
+        const divisions = collectDivs();
+        const r = await send(API + "/docs", {
+          title,
+          content,
+          style,
+          divisions,
+        });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok) alert("Guardado como borrador.");
+        else alert(j.error || "Error");
+      };
+
+      document.getElementById("publish").onclick = async () => {
+        const title = document.getElementById("title").value.trim();
+        const content = document.getElementById("content").value.trim();
+        if (!title || !content) return alert("Rellena título y contenido.");
+        const style = getStyle();
+        const divisions = collectDivs();
+
+        // 1) publicar en API
+        const r = await send(API + "/docs/publish", {
+          title,
+          content,
+          style,
+          divisions,
+        });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          alert(j.error || "Error al publicar");
+          return;
+        }
+
+        // 2) obtener autor
+        const authorName = await getCurrentUser();
+
+        // 3) notificar (cliente o servidor)
+        try {
+          if (USE_SERVER_NOTIFY) {
+            await notifyDiscordServer(divisions, title, authorName);
+          } else {
+            const results = await notifyDiscordClient(
+              divisions,
+              title,
+              authorName
+            );
+            console.log("Resultados notificación cliente:", results);
+          }
+        } catch (err) {
+          console.warn("Error en notificación Discord:", err);
+        }
+
+        alert("Documento publicado.");
+        location.href = "docs.html";
+      };
+
+      // init
+      updatePreview();
+    </script>
+  </body>
+</html>

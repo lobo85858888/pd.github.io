@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Documentos</title>
+    <style>
+      :root {
+        --bg: #071226;
+        --card: #09162a;
+        --accent1: #3b82f6;
+        --accent2: #06b6d4;
+        --muted: #9fb2c8;
+        --danger: #ff6b6b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Inter, system-ui, -apple-system;
+        background: linear-gradient(180deg, #081226 0%, #051027 100%);
+        color: #e6f0ff;
+      }
+      .panel {
+        width: 980px;
+        max-width: 95%;
+        background: linear-gradient(
+          180deg,
+          rgba(10, 20, 36, 0.9),
+          rgba(6, 12, 22, 0.85)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 26px;
+        border-radius: 16px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+      }
+      .head {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 14px;
+      }
+      .logo {
+        width: 64px;
+        height: 64px;
+        border-radius: 10px;
+        background: linear-gradient(90deg, var(--accent1), var(--accent2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: #032;
+      }
+      h1 {
+        font-size: 1.3rem;
+        margin: 0;
+      }
+      .tools {
+        margin-left: auto;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .btn {
+        background: linear-gradient(90deg, var(--accent2), var(--accent1));
+        color: #012;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 0;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .search {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin: 10px 0;
+      }
+      .search input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 10px;
+        border: 0;
+        background: rgba(255, 255, 255, 0.03);
+        color: inherit;
+      }
+      ul.docs {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0;
+        display: grid;
+        gap: 10px;
+        max-height: 480px;
+        overflow: auto;
+      }
+      li.doc {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        padding: 14px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+      }
+      .doc .left {
+        display: flex;
+        flex-direction: column;
+      }
+      .doc .title {
+        font-weight: 700;
+        font-size: 1rem;
+      }
+      .doc .meta {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .doc a.view {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 8px 12px;
+        border-radius: 8px;
+        color: var(--muted);
+        text-decoration: none;
+      }
+      .doc a.view:hover {
+        background: rgba(255, 255, 255, 0.02);
+        color: #fff;
+        transform: translateY(-3px);
+      }
+      /* locked */
+      li.locked {
+        padding: 18px;
+        border-radius: 10px;
+        background: linear-gradient(
+          180deg,
+          rgba(40, 8, 8, 0.6),
+          rgba(36, 6, 6, 0.6)
+        );
+        border: 1px solid rgba(255, 80, 80, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .locked .title {
+        color: var(--danger);
+        font-weight: 900;
+      }
+      .lock-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        color: var(--muted);
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .lock-icon {
+        font-size: 18px;
+        color: var(--danger);
+      }
+      .topsecret-note {
+        font-weight: 700;
+        color: var(--danger);
+      }
+      @media (max-width: 720px) {
+        .panel {
+          padding: 18px;
+        }
+        .head {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panel">
+      <div class="head">
+        <div class="logo">DOCS</div>
+        <div>
+          <h1>Documentos — Portal</h1>
+          <div style="color: var(--muted); font-size: 13px">
+            Accede a los informes y publicaciones
+          </div>
+        </div>
+
+        <div class="tools">
+          <button
+            id="btnNew"
+            class="btn"
+            onclick="location.href='create-doc.html'"
+          >
+            ➕ Nuevo
+          </button>
+          <button class="btn ghost" onclick="location.href='manuales.html'">
+            ⬅️ Atrás
+          </button>
+        </div>
+      </div>
+
+      <div class="search">
+        <input id="q" placeholder="Buscar por título..." />
+        <button class="btn ghost" id="btnSearch">Buscar</button>
+      </div>
+
+      <ul id="list" class="docs"></ul>
+    </div>
+
+    <script>
+      const API = "https://dawn-bar-8e7d.aritztoquero123.workers.dev/api";
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        location.href = "login.html";
+      }
+
+      function escapeHtml(s) {
+        return String(s || "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[c])
+        );
+      }
+
+      // Normaliza divisiones de documento
+      function getDocDivisions(doc) {
+        if (Array.isArray(doc.divisions) && doc.divisions.length)
+          return doc.divisions.map((d) => String(d).toUpperCase());
+        const maybe =
+          doc.division || doc.div || doc.area || doc.divisiones || null;
+        if (!maybe) return [];
+        if (Array.isArray(maybe))
+          return maybe.map((d) => String(d).toUpperCase());
+        return [String(maybe).toUpperCase()];
+      }
+
+      // Comprueba si usuario puede ver doc
+      function docVisibleToUser(doc, userDivs) {
+        if (!Array.isArray(userDivs)) return false;
+        if (userDivs.includes("SUPER")) return true;
+        const docDivs = getDocDivisions(doc);
+        if (!docDivs.length) return false;
+        return docDivs.some((d) => userDivs.includes(d));
+      }
+
+      // Construye elemento según permiso
+      function makeDocNode(doc, userDivs) {
+        const li = document.createElement("li");
+        const visible = docVisibleToUser(doc, userDivs);
+        if (visible) {
+          li.className = "doc";
+          li.innerHTML = `<div class="left">
+              <div class="title">${escapeHtml(doc.title || "Sin título")}</div>
+              <div class="meta">Publicado por ${escapeHtml(
+                doc.author || doc.autor || "Desconocido"
+              )} • ${escapeHtml(doc.created_at || doc.createdAt || "")}</div>
+            </div>
+            <div class="right"><a class="view" href="view-doc.html?id=${encodeURIComponent(
+              doc.id
+            )}">Ver</a></div>`;
+        } else {
+          li.className = "locked";
+          li.innerHTML = `<div>
+              <div class="title topsecret-note">TOP SECRET</div>
+              <div class="meta">Acceso restringido</div>
+            </div>
+            <div><button class="lock-btn" aria-disabled="true"><span class="lock-icon">🔒</span> Restringido</button></div>`;
+        }
+        return li;
+      }
+
+      // Obtiene datos de /me y devuelve array normalizado de divisiones del usuario
+      async function getUserDivisions() {
+        try {
+          const res = await fetch(API + "/me", {
+            headers: { Authorization: "Bearer " + token },
+          });
+          if (!res.ok) {
+            // si token inválido redirigimos
+            location.href = "login.html";
+            return [];
+          }
+          const u = await res.json();
+          let userDivs = [];
+          if (Array.isArray(u.divisiones) && u.divisiones.length)
+            userDivs = u.divisiones.map((x) => String(x).toUpperCase());
+          else if (Array.isArray(u.divisions) && u.divisions.length)
+            userDivs = u.divisions.map((x) => String(x).toUpperCase());
+          else if (u.role) userDivs = [String(u.role).toUpperCase()];
+          else if (u.division) userDivs = [String(u.division).toUpperCase()];
+          else userDivs = [];
+          return userDivs;
+        } catch (err) {
+          console.error("Error obteniendo usuario:", err);
+          location.href = "login.html";
+          return [];
+        }
+      }
+
+      // Carga documentos y aplica mascarado por documento
+      async function loadDocs(userDivs, q = "") {
+        const ul = document.getElementById("list");
+        ul.innerHTML =
+          '<li style="color:var(--muted);padding:12px">Cargando...</li>';
+        try {
+          const r = await fetch(
+            API + "/docs" + (q ? "?search=" + encodeURIComponent(q) : ""),
+            { headers: { Authorization: "Bearer " + token } }
+          );
+          const j = await r.json();
+          if (!r.ok) {
+            ul.innerHTML = `<li style="color:#ffb3b3;padding:12px">${
+              j.error || "Error"
+            }</li>`;
+            return;
+          }
+          if (!j.length) {
+            ul.innerHTML =
+              '<li style="color:var(--muted);padding:12px">No hay documentos.</li>';
+            return;
+          }
+
+          ul.innerHTML = "";
+          let anyVisible = false;
+          j.forEach((doc) => {
+            const node = makeDocNode(doc, userDivs);
+            if (docVisibleToUser(doc, userDivs)) anyVisible = true;
+            ul.appendChild(node);
+          });
+
+          // si hay docs pero ninguno visible, mostramos resumen TOP SECRET si quieres:
+          if (!anyVisible) {
+            ul.innerHTML =
+              '<li style="padding:18px;border-radius:10px;background:rgba(40,8,8,0.6);color:var(--danger);font-weight:800;border:1px solid rgba(255,80,80,0.08);text-align:center">No hay documentos disponibles para tu división (TOP SECRET)</li>';
+          }
+        } catch (err) {
+          console.error(err);
+          ul.innerHTML = `<li style="color:#ffb3b3;padding:12px">Error cargando documentos</li>`;
+        }
+      }
+
+      (async () => {
+        // 1) obtener divisiones del usuario
+        const userDivs = await getUserDivisions();
+
+        // 2) mostrar/ocultar botón Nuevo según permiso
+        const allowed = ["AIC", "METRO", "FTO", "DSA", "SUPER"];
+        const canCreate = userDivs.some((d) => allowed.includes(d));
+        document.getElementById("btnNew").style.display = canCreate
+          ? "inline-block"
+          : "none";
+
+        // 3) load inicial
+        await loadDocs(userDivs);
+
+        // 4) hook búsqueda
+        document.getElementById("btnSearch").addEventListener("click", () => {
+          loadDocs(userDivs, document.getElementById("q").value.trim());
+        });
+      })();
+    </script>
+  </body>
+</html>
