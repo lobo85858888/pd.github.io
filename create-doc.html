@@ -394,7 +394,7 @@
       function buildSimplePayload(division, title, authorName) {
         const divInfo = mentionOrText(division);
         const superInfo = mentionOrText("SUPER");
-        const content = `${divInfo.mention} ${superInfo.mention}\nNuevo documento subido \nTítulo: ${title}`;
+        const content = `${divInfo.mention} ${superInfo.mention}\nNuevo documento subido por: ${authorName}\nTítulo: ${title}`;
         const allowed_roles = [];
         if (divInfo.id) allowed_roles.push(divInfo.id);
         if (superInfo.id && !allowed_roles.includes(superInfo.id))

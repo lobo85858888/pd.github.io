@@ -3,63 +3,80 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Documentos</title>
+    <title>Documentos — Portal</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        --bg: #071226;
-        --card: #09162a;
-        --accent1: #3b82f6;
-        --accent2: #06b6d4;
+        --bg-0: #051026;
+        --bg-1: #071226;
+        --card-0: rgba(255, 255, 255, 0.02);
         --muted: #9fb2c8;
+        --accent1: #0ea5a4;
+        --accent2: #3b82f6;
         --danger: #ff6b6b;
+        --glass: rgba(255, 255, 255, 0.03);
       }
       * {
         box-sizing: border-box;
       }
+      html,
+      body {
+        height: 100%;
+      }
       body {
         margin: 0;
-        min-height: 100vh;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto,
+          "Helvetica Neue", Arial;
+        background: linear-gradient(180deg, var(--bg-0), var(--bg-1));
+        color: #e6f0ff;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: Inter, system-ui, -apple-system;
-        background: linear-gradient(180deg, #081226 0%, #051027 100%);
-        color: #e6f0ff;
+        padding: 28px;
       }
+
+      /* Panel */
       .panel {
         width: 980px;
         max-width: 95%;
+        border-radius: 14px;
+        padding: 20px;
         background: linear-gradient(
           180deg,
-          rgba(10, 20, 36, 0.9),
-          rgba(6, 12, 22, 0.85)
+          rgba(6, 10, 18, 0.92),
+          rgba(8, 12, 20, 0.96)
         );
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        padding: 26px;
-        border-radius: 16px;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
       }
       .head {
         display: flex;
-        align-items: center;
         gap: 16px;
-        margin-bottom: 14px;
+        align-items: center;
       }
       .logo {
-        width: 64px;
-        height: 64px;
-        border-radius: 10px;
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
         background: linear-gradient(90deg, var(--accent1), var(--accent2));
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: grid;
+        place-items: center;
         font-weight: 800;
-        color: #032;
+        color: #022;
+        font-size: 14px;
       }
       h1 {
-        font-size: 1.3rem;
         margin: 0;
+        font-size: 1.15rem;
       }
+      .subtitle {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
       .tools {
         margin-left: auto;
         display: flex;
@@ -67,322 +84,431 @@
         align-items: center;
       }
       .btn {
-        background: linear-gradient(90deg, var(--accent2), var(--accent1));
-        color: #012;
+        border: 0;
         padding: 10px 14px;
         border-radius: 10px;
-        border: 0;
         font-weight: 700;
         cursor: pointer;
+        background: linear-gradient(90deg, var(--accent2), var(--accent1));
+        color: #012;
+        box-shadow: 0 6px 18px rgba(14, 165, 164, 0.08);
       }
       .btn.ghost {
         background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.04);
         color: var(--muted);
-        font-weight: 600;
       }
+
       .search {
         display: flex;
         gap: 10px;
-        align-items: center;
-        margin: 10px 0;
+        margin: 16px 0 18px 0;
       }
       .search input {
         flex: 1;
-        padding: 10px;
-        border-radius: 10px;
+        padding: 12px;
+        border-radius: 12px;
         border: 0;
-        background: rgba(255, 255, 255, 0.03);
+        background: var(--glass);
         color: inherit;
       }
+      .search .small-note {
+        color: var(--muted);
+        font-size: 12px;
+        margin-left: 8px;
+      }
+
+      /* Lista */
       ul.docs {
         list-style: none;
         padding: 0;
-        margin: 10px 0;
+        margin: 0;
         display: grid;
-        gap: 10px;
-        max-height: 480px;
+        gap: 12px;
+        max-height: 540px;
         overflow: auto;
       }
-      li.doc {
-        background: linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.02),
-          rgba(255, 255, 255, 0.01)
-        );
-        padding: 14px;
-        border-radius: 10px;
+      li.item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 12px;
+        padding: 14px;
+        border-radius: 12px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.015),
+          rgba(255, 255, 255, 0.01)
+        );
         border: 1px solid rgba(255, 255, 255, 0.03);
       }
-      .doc .left {
+      .item .left {
         display: flex;
         flex-direction: column;
+        gap: 6px;
       }
-      .doc .title {
+      .title {
         font-weight: 700;
-        font-size: 1rem;
+        font-size: 15px;
       }
-      .doc .meta {
-        font-size: 13px;
+      .meta {
         color: var(--muted);
+        font-size: 13px;
+      }
+
+      .badges {
+        display: flex;
+        gap: 8px;
+        align-items: center;
         margin-top: 6px;
       }
-      .doc a.view {
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        padding: 8px 12px;
-        border-radius: 8px;
+      .badge {
+        font-size: 12px;
+        padding: 6px 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.03);
         color: var(--muted);
-        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.02);
+        font-weight: 700;
       }
-      .doc a.view:hover {
-        background: rgba(255, 255, 255, 0.02);
-        color: #fff;
-        transform: translateY(-3px);
+      .badge.div {
+        color: #012;
+        background: linear-gradient(90deg, var(--accent2), var(--accent1));
       }
-      /* locked */
-      li.locked {
-        padding: 18px;
+
+      .controls-right {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      a.view {
+        padding: 8px 10px;
         border-radius: 10px;
+        text-decoration: none;
+        font-weight: 800;
+        color: var(--accent2);
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      /* Locked style */
+      .locked {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px;
+        border-radius: 12px;
         background: linear-gradient(
           180deg,
           rgba(40, 8, 8, 0.6),
           rgba(36, 6, 6, 0.6)
         );
         border: 1px solid rgba(255, 80, 80, 0.08);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
       }
       .locked .title {
         color: var(--danger);
-        font-weight: 900;
       }
       .lock-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        border-radius: 8px;
-        color: var(--muted);
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 0, 0, 0.15);
         background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.04);
-      }
-      .lock-icon {
-        font-size: 18px;
         color: var(--danger);
+        font-weight: 800;
+        cursor: not-allowed;
       }
-      .topsecret-note {
-        font-weight: 700;
-        color: var(--danger);
+
+      /* Empty / error */
+      .empty {
+        padding: 18px;
+        border-radius: 10px;
+        background: var(--glass);
+        color: var(--muted);
+        text-align: center;
       }
-      @media (max-width: 720px) {
-        .panel {
-          padding: 18px;
-        }
+
+      /* Responsive */
+      @media (max-width: 640px) {
         .head {
-          flex-direction: column;
           align-items: flex-start;
-          gap: 8px;
+        }
+        .tools {
+          margin-left: 0;
+        }
+        .panel {
+          padding: 14px;
         }
       }
     </style>
   </head>
+
   <body>
-    <div class="panel">
+    <div class="panel" role="main">
       <div class="head">
         <div class="logo">DOCS</div>
         <div>
           <h1>Documentos — Portal</h1>
-          <div style="color: var(--muted); font-size: 13px">
-            Accede a los informes y publicaciones
+          <div class="subtitle">
+            Accede únicamente a lo que tu(s) división(es) te permiten ver
           </div>
         </div>
 
         <div class="tools">
-          <button
-            id="btnNew"
-            class="btn"
-            onclick="location.href='create-doc.html'"
-          >
-            ➕ Nuevo
-          </button>
-          <button class="btn ghost" onclick="location.href='manuales.html'">
-            ⬅️ Atrás
-          </button>
+          <button id="btnNew" class="btn">➕ Nuevo</button>
+          <button id="btnBack" class="btn ghost">⬅️ Atrás</button>
         </div>
       </div>
 
-      <div class="search">
+      <div class="search" aria-label="Buscar documentos">
         <input id="q" placeholder="Buscar por título..." />
-        <button class="btn ghost" id="btnSearch">Buscar</button>
+        <button id="btnSearch" class="btn ghost">Buscar</button>
+        <div class="small-note">Tus divisiones determinan acceso</div>
       </div>
 
-      <ul id="list" class="docs"></ul>
+      <ul id="list" class="docs" aria-live="polite"></ul>
+
+      <div
+        id="empty"
+        class="empty"
+        style="display: none; margin-top: 12px"
+      ></div>
     </div>
 
     <script>
-      const API = "https://dawn-bar-8e7d.aritztoquero123.workers.dev/api";
-      const token = localStorage.getItem("token");
+      window.addEventListener("DOMContentLoaded", () => {
+        const API = "https://dawn-bar-8e7d.aritztoquero123.workers.dev/api";
+        const token = localStorage.getItem("token");
+        if (!token) return (location.href = "login.html");
 
-      if (!token) {
-        location.href = "login.html";
-      }
+        const qInput = document.getElementById("q");
+        const btnSearch = document.getElementById("btnSearch");
+        const btnNew = document.getElementById("btnNew");
+        const btnBack = document.getElementById("btnBack");
+        const list = document.getElementById("list");
+        const emptyBox = document.getElementById("empty");
 
-      function escapeHtml(s) {
-        return String(s || "").replace(
-          /[&<>"']/g,
-          (c) =>
-            ({
-              "&": "&amp;",
-              "<": "&lt;",
-              ">": "&gt;",
-              '"': "&quot;",
-              "'": "&#39;",
-            }[c])
-        );
-      }
-
-      // Normaliza divisiones de documento
-      function getDocDivisions(doc) {
-        if (Array.isArray(doc.divisions) && doc.divisions.length)
-          return doc.divisions.map((d) => String(d).toUpperCase());
-        const maybe =
-          doc.division || doc.div || doc.area || doc.divisiones || null;
-        if (!maybe) return [];
-        if (Array.isArray(maybe))
-          return maybe.map((d) => String(d).toUpperCase());
-        return [String(maybe).toUpperCase()];
-      }
-
-      // Comprueba si usuario puede ver doc
-      function docVisibleToUser(doc, userDivs) {
-        if (!Array.isArray(userDivs)) return false;
-        if (userDivs.includes("SUPER")) return true;
-        const docDivs = getDocDivisions(doc);
-        if (!docDivs.length) return false;
-        return docDivs.some((d) => userDivs.includes(d));
-      }
-
-      // Construye elemento según permiso
-      function makeDocNode(doc, userDivs) {
-        const li = document.createElement("li");
-        const visible = docVisibleToUser(doc, userDivs);
-        if (visible) {
-          li.className = "doc";
-          li.innerHTML = `<div class="left">
-              <div class="title">${escapeHtml(doc.title || "Sin título")}</div>
-              <div class="meta">Publicado por ${escapeHtml(
-                doc.author || doc.autor || "Desconocido"
-              )} • ${escapeHtml(doc.created_at || doc.createdAt || "")}</div>
-            </div>
-            <div class="right"><a class="view" href="view-doc.html?id=${encodeURIComponent(
-              doc.id
-            )}">Ver</a></div>`;
-        } else {
-          li.className = "locked";
-          li.innerHTML = `<div>
-              <div class="title topsecret-note">TOP SECRET</div>
-              <div class="meta">Acceso restringido</div>
-            </div>
-            <div><button class="lock-btn" aria-disabled="true"><span class="lock-icon">🔒</span> Restringido</button></div>`;
+        function normalizeArray(val) {
+          if (!val) return [];
+          if (Array.isArray(val))
+            return val.map((v) => String(v).toUpperCase().trim());
+          return String(val)
+            .split(",")
+            .map((v) => v.toUpperCase().trim())
+            .filter(Boolean);
         }
-        return li;
-      }
 
-      // Obtiene datos de /me y devuelve array normalizado de divisiones del usuario
-      async function getUserDivisions() {
-        try {
-          const res = await fetch(API + "/me", {
-            headers: { Authorization: "Bearer " + token },
-          });
-          if (!res.ok) {
-            // si token inválido redirigimos
-            location.href = "login.html";
-            return [];
+        async function fetchDocDivisionsIfNeeded(doc) {
+          if (
+            doc.divisions ||
+            doc.divisiones ||
+            doc.division ||
+            doc.tags ||
+            doc.tag
+          ) {
+            return normalizeArray(
+              doc.divisions ||
+                doc.divisiones ||
+                doc.division ||
+                doc.tags ||
+                doc.tag
+            );
           }
-          const u = await res.json();
-          let userDivs = [];
-          if (Array.isArray(u.divisiones) && u.divisiones.length)
-            userDivs = u.divisiones.map((x) => String(x).toUpperCase());
-          else if (Array.isArray(u.divisions) && u.divisions.length)
-            userDivs = u.divisions.map((x) => String(x).toUpperCase());
-          else if (u.role) userDivs = [String(u.role).toUpperCase()];
-          else if (u.division) userDivs = [String(u.division).toUpperCase()];
-          else userDivs = [];
-          return userDivs;
-        } catch (err) {
-          console.error("Error obteniendo usuario:", err);
-          location.href = "login.html";
-          return [];
+          try {
+            const res = await fetch(
+              API + "/docs/" + encodeURIComponent(doc.id),
+              {
+                headers: { Authorization: "Bearer " + token },
+              }
+            );
+            if (res.status === 403) return { forbidden: true };
+            const text = await res.text();
+            let obj;
+            try {
+              obj = JSON.parse(text);
+            } catch {
+              obj = { raw: text };
+            }
+            return normalizeArray(
+              obj.divisions ||
+                obj.divisiones ||
+                obj.division ||
+                obj.tags ||
+                obj.tag
+            );
+          } catch (e) {
+            console.warn("fetch doc divisions error", e);
+            return { error: String(e) };
+          }
         }
-      }
 
-      // Carga documentos y aplica mascarado por documento
-      async function loadDocs(userDivs, q = "") {
-        const ul = document.getElementById("list");
-        ul.innerHTML =
-          '<li style="color:var(--muted);padding:12px">Cargando...</li>';
-        try {
-          const r = await fetch(
-            API + "/docs" + (q ? "?search=" + encodeURIComponent(q) : ""),
-            { headers: { Authorization: "Bearer " + token } }
+        function renderDivisionChips(divs) {
+          if (!divs || !divs.length) return "";
+          return divs
+            .slice(0, 3)
+            .map((d) => `<span class="badge div">${d}</span>`)
+            .join(" ");
+        }
+
+        function renderDocRow(doc, docDivs, canSee) {
+          if (canSee) {
+            return `
+              <li class="item" role="article">
+                <div class="left">
+                  <div class="title">${escapeHtml(
+                    doc.title || "Sin título"
+                  )}</div>
+                  <div class="meta">Publicado por ${escapeHtml(
+                    doc.author || "Desconocido"
+                  )} · ${escapeHtml(doc.created_at || "")}</div>
+                  <div class="badges">${renderDivisionChips(docDivs)}</div>
+                </div>
+                <div class="controls-right">
+                  <a class="view" href="view-doc.html?id=${encodeURIComponent(
+                    doc.id
+                  )}">Ver</a>
+                </div>
+              </li>
+            `;
+          } else {
+            return `
+              <li class="locked" role="article">
+                <div>
+                  <div class="title">TOP SECRET</div>
+                  <div class="meta">Documento restringido — sin permisos de acceso</div>
+                </div>
+                <div><button class="lock-btn" disabled>🔒 Bloqueado</button></div>
+              </li>
+            `;
+          }
+        }
+
+        function escapeHtml(s) {
+          return String(s || "").replace(
+            /[&<>"']/g,
+            (c) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;",
+              }[c])
           );
-          const j = await r.json();
-          if (!r.ok) {
-            ul.innerHTML = `<li style="color:#ffb3b3;padding:12px">${
-              j.error || "Error"
-            }</li>`;
-            return;
-          }
-          if (!j.length) {
-            ul.innerHTML =
-              '<li style="color:var(--muted);padding:12px">No hay documentos.</li>';
-            return;
-          }
-
-          ul.innerHTML = "";
-          let anyVisible = false;
-          j.forEach((doc) => {
-            const node = makeDocNode(doc, userDivs);
-            if (docVisibleToUser(doc, userDivs)) anyVisible = true;
-            ul.appendChild(node);
-          });
-
-          // si hay docs pero ninguno visible, mostramos resumen TOP SECRET si quieres:
-          if (!anyVisible) {
-            ul.innerHTML =
-              '<li style="padding:18px;border-radius:10px;background:rgba(40,8,8,0.6);color:var(--danger);font-weight:800;border:1px solid rgba(255,80,80,0.08);text-align:center">No hay documentos disponibles para tu división (TOP SECRET)</li>';
-          }
-        } catch (err) {
-          console.error(err);
-          ul.innerHTML = `<li style="color:#ffb3b3;padding:12px">Error cargando documentos</li>`;
         }
-      }
 
-      (async () => {
-        // 1) obtener divisiones del usuario
-        const userDivs = await getUserDivisions();
+        async function loadAll(q = "") {
+          list.innerHTML = `<li class="no-docs">Cargando...</li>`;
+          emptyBox.style.display = "none";
 
-        // 2) mostrar/ocultar botón Nuevo según permiso
-        const allowed = ["AIC", "METRO", "FTO", "DSA", "SUPER"];
-        const canCreate = userDivs.some((d) => allowed.includes(d));
-        document.getElementById("btnNew").style.display = canCreate
-          ? "inline-block"
-          : "none";
+          try {
+            // /me
+            const meRes = await fetch(API + "/me", {
+              headers: { Authorization: "Bearer " + token },
+            });
+            const meText = await meRes.text();
+            let meObj;
+            try {
+              meObj = JSON.parse(meText);
+            } catch {
+              meObj = { raw: meText };
+            }
+            if (!meRes.ok) return (location.href = "login.html");
+            const userDivs = normalizeArray(
+              meObj.divisiones ||
+                meObj.divisions ||
+                meObj.division ||
+                meObj.roles ||
+                meObj.role
+            );
 
-        // 3) load inicial
-        await loadDocs(userDivs);
+            // /docs
+            const url =
+              API + "/docs" + (q ? "?search=" + encodeURIComponent(q) : "");
+            const docsRes = await fetch(url, {
+              headers: { Authorization: "Bearer " + token },
+            });
+            const docsText = await docsRes.text();
+            let docsBody;
+            try {
+              docsBody = JSON.parse(docsText);
+            } catch {
+              docsBody = { raw: docsText };
+            }
+            if (!docsRes.ok)
+              throw new Error(
+                docsBody && docsBody.error
+                  ? docsBody.error
+                  : "Error al cargar documentos"
+              );
 
-        // 4) hook búsqueda
-        document.getElementById("btnSearch").addEventListener("click", () => {
-          loadDocs(userDivs, document.getElementById("q").value.trim());
-        });
-      })();
+            const docs = Array.isArray(docsBody) ? docsBody : [];
+            if (!docs.length) {
+              list.innerHTML = "";
+              emptyBox.style.display = "block";
+              emptyBox.textContent = "No hay documentos disponibles.";
+              return;
+            }
+
+            // obtener divisiones por doc en paralelo si es necesario
+            const promises = docs.map((doc) =>
+              fetchDocDivisionsIfNeeded(doc).then((divs) => ({ doc, divs }))
+            );
+            const settled = await Promise.allSettled(promises);
+
+            let html = "";
+            for (const s of settled) {
+              if (s.status !== "fulfilled") {
+                html += renderDocRow({}, [], false);
+                continue;
+              }
+              const { doc, divs } = s.value;
+              if (divs && divs.forbidden) {
+                html += renderDocRow(doc, [], false);
+                continue;
+              }
+              if (divs && divs.error) {
+                html += renderDocRow(doc, [], false);
+                continue;
+              }
+              const docDivs = Array.isArray(divs) ? divs : [];
+              const canSee =
+                !docDivs.length ||
+                userDivs.includes("SUPER") ||
+                docDivs.some((d) => userDivs.includes(d));
+              html += renderDocRow(doc, docDivs, canSee);
+            }
+
+            list.innerHTML = html;
+
+            // botón nuevo
+            const allowed = ["AIC", "METRO", "FTO", "DSA", "SUPER"];
+            if (btnNew)
+              btnNew.style.display = userDivs.some((d) => allowed.includes(d))
+                ? "inline-block"
+                : "none";
+          } catch (err) {
+            console.error(err);
+            list.innerHTML = "";
+            emptyBox.style.display = "block";
+            emptyBox.textContent = "Error conectando al servidor.";
+          }
+        }
+
+        if (btnBack)
+          btnBack.addEventListener(
+            "click",
+            () => (location.href = "index.html")
+          );
+        if (btnNew)
+          btnNew.addEventListener(
+            "click",
+            () => (location.href = "create-doc.html")
+          );
+        if (btnSearch && qInput)
+          btnSearch.addEventListener("click", () =>
+            loadAll(qInput.value.trim())
+          );
+        loadAll();
+      });
     </script>
   </body>
 </html>
