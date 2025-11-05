@@ -190,6 +190,10 @@
         <div class="divisions">
           <label><input class="div" type="checkbox" value="AIC" /> AIC</label>
           <label
+            ><input class="div" type="checkbox" value="Transito" />
+            Transito</label
+          >
+          <label
             ><input class="div" type="checkbox" value="METRO" /> METRO</label
           >
           <label><input class="div" type="checkbox" value="DSA" /> DSA</label>
@@ -233,6 +237,8 @@
       // Webhooks (mapa)
       const DISCORD_WEBHOOKS = {
         AIC: "https://discord.com/api/webhooks/1434928263360155649/uT7FB6cGKDw67AMZ_6M4bxUejAGz-fI6YWPtM3AbU93wAFvhD03m9MlVEYYQdwRqoYQj",
+        Transito:
+          "https://discord.com/api/webhooks/1435670432622710854/cVr7gLjTTIWMuQ9t53aPm3hkVOYuX5kBmp4fYzOUf8X2asPte4eEgawym4odWvPVK4ge",
         METRO:
           "https://discord.com/api/webhooks/1434928476338524171/RGTJaIQsBKnk3OMQAEJQ_jHvluFIYOvXs7Aa5KMxYSo_gAdgt1fSiV8XXNYdY_bHBhNb",
         FTO: "https://discord.com/api/webhooks/1434928565375209482/OUqqsCJ5VaEqUkwk0n7QVE_shi_VGzO-Uhv-uiid5N15upW4ZpxiS4J_Kgw8EIYBzYyC",
@@ -242,6 +248,7 @@
       // REEMPLAZA por los Role IDs reales para que se haga ping: (si no los pones, hace fallback textual)
       const DISCORD_ROLE_IDS = {
         AIC: "1434930322830659706",
+        Transito: "1435670307452227654",
         METRO: "1434930363976777808",
         FTO: "1434930501210214492",
         DSA: "1434930467462844658",
@@ -394,7 +401,7 @@
       function buildSimplePayload(division, title, authorName) {
         const divInfo = mentionOrText(division);
         const superInfo = mentionOrText("SUPER");
-        const content = `${divInfo.mention} ${superInfo.mention}\nNuevo documento subido por: ${authorName}\nTítulo: ${title}`;
+        const content = `${divInfo.mention} ${superInfo.mention}\nNuevo documento subido. \nTítulo: ${title}`;
         const allowed_roles = [];
         if (divInfo.id) allowed_roles.push(divInfo.id);
         if (superInfo.id && !allowed_roles.includes(superInfo.id))
